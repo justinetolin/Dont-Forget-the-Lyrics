@@ -22,10 +22,14 @@ const grid = $("#grid");
 const arena = $("#arena");
 const video = $("#song-video");
 const backdrop = $("#modal-backdrop");
+const cues = Object.fromEntries([["theme","1 Game Theme"],["board","2 Board Ambience"],["round","3 Round Sting"],["randomizer","4 Randomizer"],["select","5 Box Selection"],["hint","6 Hint Reveal"],["correct","7 Active Correct"],["wrong","8 Active Wrong"],["steal","9 Steal Round"],["lock","10 Lock In"],["forfeit","11 Points Forfeit"],["reveal","12 Points Reveal"],["topup","13 Points Topup"]].map(([k,n])=>[k,new Audio(`audios/${n}.${k === "topup" ? "m4a" : "mp3"}`)]));
+function cue(k,loop=false){const a=cues[k];if(a){a.loop=loop;a.currentTime=0;a.play().catch(()=>{});}}
+function stopCue(k){const a=cues[k];if(a){a.pause();a.currentTime=0;a.loop=false;}}
 
 function showTitleCard() {
   if (state.launchPhase !== "start") return;
   state.launchPhase = "title";
+  cue("theme", true);
   $("#launch-screen").classList.add("leaving");
   $("#title-card").classList.add("visible");
   $("#title-card").setAttribute("aria-hidden", "false");
@@ -41,6 +45,7 @@ function enterGameStage() {
   if (state.launchPhase !== "titleReady") return;
   clearTimeout(state.titleTimer);
   state.launchPhase = "stage";
+  stopCue("theme");
   $("#title-card").classList.add("leaving");
   $("#title-card").setAttribute("aria-hidden", "true");
   $("#game-shell").classList.add("visible");
@@ -102,12 +107,14 @@ function selectBox() {
   if (!song || state.played.has(song.id)) return;
   state.box = song;
   state.flow = "hint";
+  stopCue("board"); cue("hint");
   renderGrid();
   setHub("Hint revealed", "Enter: open song arena · Esc: hide hint");
 }
 
 function enterArena() {
   if (!state.box) return;
+  stopCue("board");
   state.flow = "arena";
   $("#arena-box-label").textContent = `MYSTERY BOX #${state.box.id}`;
   $("#video-notice").textContent = "";
@@ -169,6 +176,7 @@ video.addEventListener("ended", () => {
 });
 
 function beginAnswerPlayback(forfeited) {
+  stopCue("steal");
   clearInterval(state.countdownTimer);
   state.countdownTimer = null;
   state.pendingForfeit = forfeited;
@@ -239,6 +247,7 @@ function handleCorrect() {
   clearInterval(state.countdownTimer);
   state.countdownTimer = null;
   $("#countdown").textContent = "";
+  cue("correct");
   beginAnswerPlayback(false);
 }
 
@@ -251,6 +260,7 @@ function handleWrong() {
   clearInterval(state.countdownTimer);
   state.countdownTimer = null;
   $("#countdown").textContent = "";
+  cue("wrong");
   const options = TEAMS.filter((_, index) => index !== state.activeIndex)
     .map(team => ({ label: team.name, value: team.id }));
   options.push({ label: "No Steal", value: "forfeit" });
@@ -260,6 +270,7 @@ function handleWrong() {
 function startRound(roundNumber) {
   state.round = roundNumber;
   state.flow = "randomizing";
+  stopCue("board"); cue("round"); cue("randomizer");
   backdrop.classList.remove("round-intro");
   state.modalOptions = [];
   $("#modal-kicker").textContent = `Round ${roundNumber} · turn order`;
@@ -289,6 +300,7 @@ function startRound(roundNumber) {
     $("#modal-title").textContent = `Round ${roundNumber} turn order`;
     $("#modal-copy").textContent = state.turnOrder.map((index, position) => `${position + 1}. ${TEAMS[index].name}`).join("   ·   ");
     state.flow = "roundStart";
+    stopCue("randomizer");
     state.modalOptions = [{ label: `Start Round ${roundNumber}`, value: "start" }];
     state.modalIndex = 0;
     renderOptions();
@@ -311,6 +323,7 @@ function showRoundIntro(roundNumber) {
 }
 
 function openModal(title, copy, options, flow) {
+  if (flow === "steal") cue("steal", true); else stopCue("steal");
   state.flow = flow;
   state.modalOptions = options;
   state.modalIndex = 0;
@@ -378,6 +391,7 @@ function confirmOption() {
   const selected = state.modalOptions[state.modalIndex];
   if (!selected) return;
   if (state.flow === "roundStart") {
+    stopCue("randomizer"); cue("board", true);
     state.started = true;
     state.activeIndex = state.turnOrder[0];
     state.turnPosition = 0;
@@ -393,6 +407,7 @@ function confirmOption() {
     state.flow = "complete";
     setHub("Game complete", "All twelve round turns have been played.");
   } else if (state.flow === "giveTake") {
+    cue("lock");
     state.giveTake = selected.value;
     if (selected.value === "take") {
       state.target = controllingTeamId();
@@ -402,11 +417,12 @@ function confirmOption() {
       openModal("Choose a team to give points", "The selected team will receive this box's mystery points.", candidates.map(team => ({ label: team.name, value: team.id })), "target");
     }
   } else if (state.flow === "steal") {
-    if (selected.value === "forfeit") { beginAnswerPlayback(true); return; }
+    if (selected.value === "forfeit") { cue("forfeit"); beginAnswerPlayback(true); return; }
     state.winner = selected.value;
     beginAnswerPlayback(false);
   } else if (state.flow === "target") {
     state.target = selected.value;
+    cue("lock");
     openModal("Mystery points are ready", `Points will go to ${TEAMS.find(team => team.id === state.target).name}. Confirm to reveal.`, [{ label: "Reveal points", value: "reveal" }], "reveal");
   } else if (state.flow === "reveal") revealPoints();
   else if (state.flow === "forfeitReveal") beginPointReveal(true);
@@ -422,6 +438,7 @@ function beginPointReveal(forfeited) {
   state.countdownTimer = null;
   state.pendingForfeit = forfeited;
   video.pause();
+  stopCue("steal"); cue("reveal");
   state.flow = "suspense";
   $(".game-modal").classList.add("suspense");
   state.modalOptions = [];
@@ -454,10 +471,11 @@ function beginPointReveal(forfeited) {
     state.modalIndex = 0;
     renderOptions();
     updateHubForModal();
-  }, 1150);
+  }, 2000);
 }
 
 function launchPointParticles(teamId, positive) {
+  cue("topup");
   const origin = $(".game-modal").getBoundingClientRect();
   const target = document.querySelector(`.team-card[data-team="${teamId}"] .team-score`);
   if (!target) return;
@@ -480,6 +498,7 @@ function launchPointParticles(teamId, positive) {
 }
 
 function finishBox(scored) {
+  stopCue("steal"); stopCue("board"); stopCue("reveal");
   const particleTeam = scored ? (state.target || state.winner || TEAMS[state.activeIndex].id) : null;
   const particlePositive = state.box ? state.box.points >= 0 : true;
   clearInterval(state.countdownTimer);
@@ -509,6 +528,7 @@ function finishBox(scored) {
   renderGrid();
   state.turnPosition += 1;
   if (state.turnPosition < TEAMS.length) {
+    cue("board", true);
     state.activeIndex = state.turnOrder[state.turnPosition];
     renderTeams();
     if (particleTeam) launchPointParticles(particleTeam, particlePositive);
@@ -533,6 +553,7 @@ function closeRound() { finishBox(true); }
 function cancelFlow() {
   if (state.flow === "hint") {
     state.flow = "board";
+    cue("board", true);
     state.box = null;
     renderGrid();
     setHub(`Round ${state.round}`, "↑ ↓ ← → move · Enter select · Space reveal");
@@ -553,6 +574,7 @@ function moveGrid(key) {
     if (open.has(index)) { state.selected = index; break; }
   }
   renderGrid();
+  cue("select");
 }
 
 document.addEventListener("keydown", event => {

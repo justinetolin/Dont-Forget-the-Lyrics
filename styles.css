@@ -173,8 +173,9 @@ h1 { margin: 0; color: var(--gold); font-size: clamp(22px, 3vw, 34px); letter-sp
 .modal-backdrop.visible .game-modal { transform: translateY(0) scale(1) rotateX(0); opacity: 1; }
 .modal-backdrop.clear-stage { background: #05061062; backdrop-filter: none; }
 .modal-backdrop.blurred-stage { background: #050610a8; backdrop-filter: blur(10px); }
-.game-modal.suspense { animation: heartbeat .86s ease-in-out infinite; }
-@keyframes heartbeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.035); } 30% { transform: scale(.995); } 45% { transform: scale(1.025); } 60% { transform: scale(1); } }
+.game-modal.suspense { animation: heartbeat 1.35s ease-in-out infinite; }
+/* Adjust the bump count by adding/removing scale-up and settle keyframes in this 0–100% cycle. */
+@keyframes heartbeat { 0%, 100% { transform: scale(1); } 10% { transform: scale(1.035); } 18% { transform: scale(.995); } 28% { transform: scale(1.035); } 36% { transform: scale(.995); } 46% { transform: scale(1.035); } 54% { transform: scale(1); } }
 .round-intro .game-modal { border-color: #facc15aa; box-shadow: 0 0 0 1px #facc1533, 0 0 55px #8b5cf655, 0 22px 70px #000b; }
 .round-intro #modal-title { animation: roundAnnounce 1.15s ease-in-out infinite alternate; }
 @keyframes roundAnnounce { to { transform: scale(1.08); text-shadow: 0 0 32px #facc15aa; } }
