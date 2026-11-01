@@ -49,6 +49,39 @@ Save as UTF-8 CSV or you may edit this in MS Excel as well. Google Sheets works 
 
 ## Game flow
 
+```mermaid
+flowchart TD
+    A[Start game] --> B[Title card and game theme]
+    B --> C[Main stage]
+    C --> D[Space: show round and randomize turn order]
+    D --> E[Enter: confirm order and start board ambience]
+    E --> F[Active team selects an unopened box]
+    F --> G[Reveal hint, then open video]
+    G --> H[Video reaches cutoff and pauses]
+    H --> I{Active team correct?}
+    I -- Yes: C or Space --> J[Resume video to aftrev]
+    I -- No: X or W --> K[Open steal window; steal music loops]
+    K --> L{Steal answered correctly?}
+    L -- Yes: host selects that team --> J
+    L -- No steal or wrong steal --> M[Select No Steal / Forfeit]
+    M --> N[Forfeit cue; resume video to aftrev]
+    J --> O[Take It or Give It]
+    O --> P{Give It chosen?}
+    P -- Yes --> Q[Select recipient team and lock in]
+    P -- No: Take It --> R[Lock in active/stealing team]
+    Q --> S[Reveal Points action: stop video and play reveal cue]
+    R --> S
+    S --> T[Update points and show particle trail]
+    N --> U[Mark box played; award no points]
+    T --> V{More turns this round?}
+    U --> V
+    V -- Yes --> F
+    V -- No, more rounds --> W[Show next round; Space runs randomizer]
+    W --> E
+    V -- No, Round 3 complete --> X[Show final scores and winner]
+```
+
+
 1. **Start and title card:** Click Start or press Space/Enter. The title card appears with the game theme. After five seconds, “Space to continue” appears at the bottom. Continue with Space/Enter or click the title card.
 2. **Begin a round:** On the board, press Space to open the animated randomizer. It plays the round sting and randomizer cue, then displays the randomized team order. Press Enter to confirm and begin the round; board ambience starts looping.
 3. **Pick a box:** The active team chooses any unopened box with the arrow keys. Enter reveals its hint. Escape hides the hint and returns to box picking. Enter or Space opens the video arena.
