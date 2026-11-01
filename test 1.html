@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Don't Forget the Lyrics! - Official Game Board</title>
+<style>
+  :root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #f59e0b;
+    --text: #f8fafc;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { background-color: var(--bg-color); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+  
+  h1 { margin-bottom: 20px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+
+  /* Team Scoreboard Layout */
+  .scoreboard { display: flex; justify-content: space-between; width: 100%; max-width: 1100px; margin-bottom: 20px; gap: 15px; }
+  .team-card { background: var(--card-bg); border: 2px solid #334155; border-radius: 12px; padding: 15px; flex: 1; text-align: center; }
+  .team-card.left { border-left: 5px solid #3b82f6; }
+  .team-card.right { border-left: 5px solid #ec4899; }
+  .team-name { font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
+  .team-score { font-size: 2rem; color: var(--accent); font-weight: bold; }
+
+  /* 4x4 Grid */
+  .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; max-width: 1100px; }
+  .box-card { background: var(--card-bg); border: 2px solid #475569; border-radius: 12px; height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+  .box-card:hover:not(.opened) { transform: translateY(-3px); border-color: var(--accent); background: #334155; }
+  .box-number { font-size: 2.5rem; font-weight: bold; }
+  .box-card.opened { background: #0f172a; opacity: 0.5; border-color: #1e293b; cursor: not-allowed; }
+  .box-card.opened .box-number { display: none; }
+  .box-title { font-size: 0.9rem; color: #94a3b8; text-align: center; padding: 5px; font-weight: bold; }
+
+  /* Modal Overlay for Game Play */
+  .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); justify-content: center; align-items: center; z-index: 100; }
+  .modal-content { background: var(--card-bg); border-radius: 16px; padding: 25px; width: 90%; max-width: 750px; text-align: center; position: relative; border: 1px solid #475569; }
+  
+  video { width: 100%; border-radius: 8px; margin-bottom: 15px; max-height: 380px; background: black; }
+  
+  .controls { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+  .btn-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  
+  button { background: #334155; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+  button:hover { background: var(--accent); color: black; }
+  button.btn-correct { background: #16a34a; }
+  button.btn-wrong { background: #dc2626; }
+
+  .status-box { font-size: 1.2rem; margin: 10px 0; font-weight: bold; color: var(--accent); }
+  .points-reveal { font-size: 2.2rem; font-weight: bold; color: #4ade80; margin: 15px 0; display: none; }
+</style>
+</head>
+<body>
+
+  <h1>🎵 Don't Forget the Lyrics!</h1>
+
+  <!-- Scoreboard -->
+  <div class="scoreboard">
+    <div class="team-card left">
+      <div class="team-name">Florea</div>
+      <div class="team-score" id="score-florea">0</div>
+    </div>
+    <div class="team-card left">
+      <div class="team-name">Solaris</div>
+      <div class="team-score" id="score-solaris">0</div>
+    </div>
+    <div class="team-card right">
+      <div class="team-name">Aurelia</div>
+      <div class="team-score" id="score-aurelia">0</div>
+    </div>
+    <div class="team-card right">
+      <div class="team-name">Frostveil</div>
+      <div class="team-score" id="score-frostveil">0</div>
+    </div>
+  </div>
+
+  <!-- Main Game Grid -->
+  <div class="grid-container" id="grid"></div>
+
+  <!-- Gameplay Modal -->
+  <div class="modal" id="gameModal">
+    <div class="modal-content">
+      <h2 id="modalBoxTitle">Box #1 Challenge</h2>
+      <div class="status-box" id="statusBox">Click 'Play Song' when ready!</div>
+      
+      <!-- Video Element -->
+      <video id="gameVideo" controls>
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support video.
+      </video>
+
+      <!-- Interactive Flow Controls -->
+      <div class="controls">
+        <div class="btn-row">
+          <button id="btnStartVideo" onclick="playVideoWithCutoff()">▶ Play Song</button>
+        </div>
+
+        <div class="btn-row" id="verdictRow" style="display:none;">
+          <button class="btn-correct" onclick="handleVerdict(true)">✓ Correct / Nailed It</button>
+          <button class="btn-wrong" onclick="handleVerdict(false)">✕ Wrong / Time's Up</button>
+        </div>
+
+        <div id="stealSection" style="display:none;">
+          <div class="status-box">STEAL WINDOW OPEN! Select Stealing Team:</div>
+          <div class="btn-row">
+            <button onclick="processSteal('florea')">Florea</button>
+            <button onclick="processSteal('solaris')">Solaris</button>
+            <button onclick="processSteal('aurelia')">Aurelia</button>
+            <button onclick="processSteal('frostveil')">Frostveil</button>
+            <button class="btn-wrong" onclick="processSteal(null)">No Steal / Forfeited</button>
+          </div>
+        </div>
+
+        <div id="giveTakeSection" style="display:none;">
+          <div class="status-box">Select Action:</div>
+          <div class="btn-row">
+            <button onclick="selectGiveTake('TAKE')">TAKE (Keep Points)</button>
+            <button onclick="selectGiveTake('GIVE')">GIVE (Pass Points)</button>
+          </div>
+        </div>
+
+        <div id="targetTeamSection" style="display:none;">
+          <div class="status-box">Select Target Team to GIVE points to:</div>
+          <div class="btn-row" id="giveTeamButtons"></div>
+        </div>
+
+        <div id="revealSection" style="display:none;">
+          <button onclick="revealMysteryPoints()">🎁 Reveal Mystery Points!</button>
+          <div class="points-reveal" id="mysteryPointDisplay"></div>
+        </div>
+
+        <div class="btn-row" style="margin-top: 15px;">
+          <button onclick="closeModal()">Back to Board</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Dynamic parsing setup matching your local filenames
+  const boxesData = [
+    { id: 1, title: "Stop the Wedding", videoSrc: "1_Stop the Wedding_71.44_-10.mp4", cutoff: 71.44, points: -10, opened: false },
+    { id: 2, title: "Na Para Bang", videoSrc: "2_Na Para Bang_19.28_+30.mp4", cutoff: 19.28, points: 30, opened: false },
+    { id: 3, title: "The Cure", videoSrc: "3_The Cure_24.24_+10.mp4", cutoff: 24.24, points: 10, opened: false },
+    { id: 4, title: "This Is Me", videoSrc: "4_This Is Me_27.86_+50.mp4", cutoff: 27.86, points: 50, opened: false },
+    
+    // Placeholder configuration for boxes 5 through 16
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: i + 5,
+      title: `Song Track ${i + 5}`,
+      videoSrc: "",
+      cutoff: 15.0,
+      points: 20,
+      opened: false
+    }))
+  ];
+
+  const scores = { florea: 0, solaris: 0, aurelia: 0, frostveil: 0 };
+  let currentBox = null;
+  let activeTeam = null; 
+  let winningTeam = null; 
+  let giveTakeChoice = null; 
+
+  // Render 4x4 Grid
+  const gridEl = document.getElementById('grid');
+  function initGrid() {
+    gridEl.innerHTML = '';
+    boxesData.forEach(box => {
+      const card = document.createElement('div');
+      card.className = `box-card ${box.opened ? 'opened' : ''}`;
+      card.id = `box-${box.id}`;
+      card.onclick = () => openBox(box.id);
+      
+      card.innerHTML = `
+        <div class="box-number">#${box.id}</div>
+        ${box.opened ? `<div class="box-title">${box.title}</div>` : ''}
+      `;
+      gridEl.appendChild(card);
+    });
+  }
+
+  // Open Modal for Selected Box
+  function openBox(boxId) {
+    currentBox = boxesData.find(b => b.id === boxId);
+    if (currentBox.opened) return;
+
+    document.getElementById('modalBoxTitle').innerText = `Box #${currentBox.id} - ${currentBox.title}`;
+    document.getElementById('statusBox').innerText = `Cutoff set at ${currentBox.cutoff}s. Click 'Play Song' when ready!`;
+    
+    const video = document.getElementById('gameVideo');
+    document.getElementById('videoSource').src = currentBox.videoSrc;
+    video.load();
+
+    // Reset controls
+    document.getElementById('btnStartVideo').style.display = 'inline-block';
+    document.getElementById('verdictRow').style.display = 'none';
+    document.getElementById('stealSection').style.display = 'none';
+    document.getElementById('giveTakeSection').style.display = 'none';
+    document.getElementById('targetTeamSection').style.display = 'none';
+    document.getElementById('revealSection').style.display = 'none';
+    document.getElementById('mysteryPointDisplay').style.display = 'none';
+
+    document.getElementById('gameModal').style.display = 'flex';
+  }
+
+  // Frame-Accurate Millisecond Video Cutoff
+  function playVideoWithCutoff() {
+    const video = document.getElementById('gameVideo');
+    document.getElementById('btnStartVideo').style.display = 'none';
+    document.getElementById('statusBox').innerText = "🎵 Playing song...";
+
+    video.play();
+
+    const checkTime = () => {
+      if (video.currentTime >= currentBox.cutoff) {
+        video.pause();
+        video.removeEventListener('timeupdate', checkTime);
+        document.getElementById('statusBox').innerText = "🛑 MUSIC STOPPED! Active team has 3 seconds!";
+        document.getElementById('verdictRow').style.display = 'flex';
+      }
+    };
+
+    video.addEventListener('timeupdate', checkTime);
+  }
+
+  // Handle Verdict
+  function handleVerdict(isCorrect) {
+    document.getElementById('verdictRow').style.display = 'none';
+    if (isCorrect) {
+      document.getElementById('statusBox').innerText = "Correct! Choose to GIVE or TAKE mystery points.";
+      document.getElementById('giveTakeSection').style.display = 'block';
+    } else {
+      document.getElementById('statusBox').innerText = "Incorrect! Steal Window Opened!";
+      document.getElementById('stealSection').style.display = 'block';
+    }
+  }
+
+  // Handle Steal
+  function processSteal(stealingTeam) {
+    document.getElementById('stealSection').style.display = 'none';
+    if (stealingTeam) {
+      winningTeam = stealingTeam;
+      document.getElementById('statusBox').innerText = `${stealingTeam.toUpperCase()} stole! Choose to GIVE or TAKE.`;
+      document.getElementById('giveTakeSection').style.display = 'block';
+    } else {
+      document.getElementById('statusBox').innerText = "No steal made. Points forfeited.";
+      currentBox.opened = true;
+      initGrid();
+    }
+  }
+
+  // Handle Give / Take Logic
+  function selectGiveTake(choice) {
+    giveTakeChoice = choice;
+    document.getElementById('giveTakeSection').style.display = 'none';
+
+    if (choice === 'TAKE') {
+      document.getElementById('revealSection').style.display = 'block';
+    } else {
+      const container = document.getElementById('giveTeamButtons');
+      container.innerHTML = '';
+      ['florea', 'solaris', 'aurelia', 'frostveil'].forEach(t => {
+        if (t !== winningTeam) {
+          const btn = document.createElement('button');
+          btn.innerText = t.toUpperCase();
+          btn.onclick = () => {
+            winningTeam = t;
+            document.getElementById('targetTeamSection').style.display = 'none';
+            document.getElementById('revealSection').style.display = 'block';
+          };
+          container.appendChild(btn);
+        }
+      });
+      document.getElementById('targetTeamSection').style.display = 'block';
+    }
+  }
+
+  // Reveal Points & Update Scoreboard
+  function revealMysteryPoints() {
+    const pts = currentBox.points;
+    const ptDisplay = document.getElementById('mysteryPointDisplay');
+    ptDisplay.innerText = `${pts >= 0 ? '+' : ''}${pts} POINTS!`;
+    ptDisplay.style.display = 'block';
+
+    if (winningTeam) {
+      scores[winningTeam] += pts;
+      document.getElementById(`score-${winningTeam}`).innerText = scores[winningTeam];
+    }
+
+    currentBox.opened = true;
+    initGrid();
+  }
+
+  function closeModal() {
+    const video = document.getElementById('gameVideo');
+    video.pause();
+    document.getElementById('gameModal').style.display = 'none';
+  }
+
+  // Initialize Board on Page Load
+  initGrid();
+</script>
+</body>
+</html>

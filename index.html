@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e1a">
+  <title>Don't Forget the Lyrics! — Live Party Edition</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <section id="launch-screen" class="launch-screen" aria-label="Game start screen">
+    <button id="start-game" class="start-game" type="button">Start</button>
+  </section>
+  <section id="title-card" class="title-card" aria-hidden="true" aria-label="Don't Forget the Lyrics title card">
+    <div class="title-card-content">
+      <p class="title-card-kicker">A live music party game</p>
+      <h1><span>Don't Forget</span><strong>the Lyrics!</strong></h1>
+      <div class="title-card-rule" aria-hidden="true"><i></i><span>♪</span><i></i></div>
+    </div>
+    <p id="title-continue" class="title-continue" aria-live="polite"></p>
+  </section>
+  <div id="game-shell" class="game-shell" aria-hidden="true">
+  <header class="masthead">
+    <h1>Don't Forget the Lyrics!</h1>
+  </header>
+
+  <main class="layout">
+    <aside class="team-column" id="teams-left" aria-label="Team scores"></aside>
+    <section class="stage" aria-label="Game board">
+      <div class="stage-heading"><div><p class="eyebrow">The stage</p><h2>Choose a mystery box</h2></div><div class="active-turn">ACTIVE TEAM <strong id="active-team-name">Florea</strong><span class="remaining-count"><b id="remaining-boxes">16</b> BOXES LEFT</span></div></div>
+      <div id="grid" class="grid" role="grid" aria-label="Sixteen mystery boxes"></div>
+      <p class="board-note">Choose carefully. The song, cutoff, and points stay secret.</p>
+    </section>
+    <aside class="team-column" id="teams-right" aria-label="Team scores"></aside>
+  </main>
+
+  <footer class="footer"><span>♪</span> Follow the melody. Trust your memory.</footer>
+
+  </div>
+  <section id="arena" class="arena" aria-hidden="true">
+    <div class="video-wrap">
+      <video id="song-video" playsinline preload="metadata"></video>
+      <div class="video-overlay"><span id="arena-box-label">MYSTERY BOX #1</span><button id="arena-close" class="icon-button" aria-label="Return to board">×</button></div>
+      <div id="countdown" class="countdown" aria-live="assertive"></div>
+      <div id="video-message" class="video-message">Ready when you are</div>
+      <div id="video-notice" class="video-notice" aria-live="polite"></div>
+      <div class="volume-control"><button id="volume-button" class="volume-button" aria-label="Show volume slider">🔊</button><input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.7" aria-label="Video volume"></div>
+      <div class="cutoff-track" aria-hidden="true"><div id="cutoff-progress"></div></div>
+    </div>
+  </section>
+  <div id="modal-backdrop" class="modal-backdrop" aria-hidden="true">
+    <section class="game-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <p id="modal-kicker" class="eyebrow">Host decision</p><h2 id="modal-title">Choose what happens next</h2>
+      <p id="modal-copy" class="modal-copy"></p>
+      <div id="modal-options" class="modal-options"></div>
+      <div id="reveal-result" class="reveal-result" aria-live="polite"></div>
+      <p class="modal-controls">↑ ↓ ← → move <span>·</span> Enter confirm <span>·</span> Esc back</p>
+    </section>
+  </div>
+</body>
+</html>
