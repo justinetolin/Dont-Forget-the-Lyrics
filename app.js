@@ -264,7 +264,7 @@ function handleWrong() {
   cue("wrong");
   const options = TEAMS.filter((_, index) => index !== state.activeIndex)
     .map(team => ({ label: team.name, value: team.id }));
-  options.push({ label: "No Steal", value: "forfeit" });
+  options.push({ label: "No Steal / Forfeit", value: "forfeit" });
   openModal("Incorrect lyrics", "Other teams may buzz in. Select the team that won the steal.", options, "steal");
 }
 
@@ -356,7 +356,7 @@ function renderOptions() {
       content = `<img src="${team.logo}" alt=""><span>${team.name}</span>`;
     } else if (option.value === "forfeit") {
       classes += " team-option no-steal-option";
-      content = `<span class="choice-icon">—</span><span>No Steal</span>`;
+      content = `<span class="choice-icon">—</span><span>No Steal / Forfeit</span>`;
     }
     return `<button class="${classes} ${index === state.modalIndex ? "selected" : ""}" data-option="${index}">${content}</button>`;
   }).join("");
