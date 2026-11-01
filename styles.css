@@ -22,6 +22,11 @@ button { color: inherit; font: inherit; }
 .masthead, .layout, .footer { position: relative; z-index: 1; }
 .game-shell { opacity: 0; visibility: hidden; transform: scale(.985); transition: opacity .45s ease, transform .55s cubic-bezier(.2,.9,.25,1), visibility .45s; }
 .game-shell.visible { opacity: 1; visibility: visible; transform: scale(1); }
+.cue-volume-control { position: fixed; z-index: 4; left: 18px; bottom: 18px; width: 38px; height: 38px; display: flex; align-items: center; gap: 7px; padding: 4px; overflow: hidden; border: 1px solid #facc1566; border-radius: 22px; background: #080a12d9; box-shadow: 0 5px 20px #0007; transition: width .22s ease, opacity .18s ease; opacity: .78; }
+.cue-volume-control:hover, .cue-volume-control:focus-within { width: 150px; opacity: 1; }
+.cue-volume-control button { flex: 0 0 28px; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; color: var(--gold); background: transparent; cursor: pointer; font-size: 17px; }
+.cue-volume-control input { width: 0; opacity: 0; accent-color: var(--gold); transition: width .22s ease, opacity .18s ease; }
+.cue-volume-control:hover input, .cue-volume-control:focus-within input { width: 100px; opacity: 1; }
 .launch-screen, .title-card { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; overflow: hidden; }
 .launch-screen { background: linear-gradient(#0a0e1a66, #0a0e1a88); transition: opacity .55s ease, visibility .55s; }
 .launch-screen.leaving { opacity: 0; visibility: hidden; pointer-events: none; }

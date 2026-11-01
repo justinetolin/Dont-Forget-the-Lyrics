@@ -22,8 +22,9 @@ const grid = $("#grid");
 const arena = $("#arena");
 const video = $("#song-video");
 const backdrop = $("#modal-backdrop");
-const cues = Object.fromEntries([["theme","1 Game Theme"],["board","2 Board Ambience"],["round","3 Round Sting"],["randomizer","4 Randomizer"],["select","5 Box Selection"],["hint","6 Hint Reveal"],["correct","7 Active Correct"],["wrong","8 Active Wrong"],["steal","9 Steal Round"],["lock","10 Lock In"],["forfeit","11 Points Forfeit"],["reveal","12 Points Reveal"],["topup","13 Points Topup"]].map(([k,n])=>[k,new Audio(`audios/${n}.${k === "topup" ? "m4a" : "mp3"}`)]));
-function cue(k,loop=false){const a=cues[k];if(a){a.loop=loop;a.currentTime=0;a.play().catch(()=>{});}}
+const cues = Object.fromEntries([["theme","1 Game Theme"],["board","2 Board Ambience"],["round","3 Round Sting"],["randomizer","4 Randomizer"],["select","5 Box Selection"],["hint","6 Hint Reveal"],["correct","7 Active Correct"],["wrong","8 Active Wrong"],["steal","9 Steal Round"],["lock","10 Lock In"],["forfeit","11 Points Forfeit"],["reveal","12 Points Reveal"],["topup","13 Points Topup"]].map(([k,n])=>[k,new Audio(`audios/${n}.mp3`)]));
+let cueVolume = 0.8;
+function cue(k,loop=false){const a=cues[k];if(a){a.loop=loop;if(k!=="theme")a.volume=cueVolume;a.currentTime=0;a.play().catch(()=>{});}}
 function stopCue(k){const a=cues[k];if(a){a.pause();a.currentTime=0;a.loop=false;}}
 
 function showTitleCard() {
@@ -639,6 +640,10 @@ $("#volume-slider").addEventListener("input", event => {
   $("#volume-button").textContent = video.volume === 0 ? "🔇" : video.volume < 0.35 ? "🔉" : "🔊";
 });
 $("#volume-button").addEventListener("click", () => $("#volume-slider").focus());
+$("#cue-volume-slider").addEventListener("input", event => {
+  cueVolume = Number(event.currentTarget.value);
+  Object.entries(cues).forEach(([key, audio]) => { if (key !== "theme") audio.volume = cueVolume; });
+});
 
 async function init() {
   try {
