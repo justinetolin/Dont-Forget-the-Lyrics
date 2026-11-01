@@ -1,21 +1,19 @@
 # Don't Forget the Lyrics!
 
-A browser based music trivia party game for four teams. Teams choose mystery boxes, listen to song clips, complete the missing lyrics, and decide whether to take or give the hidden points.
+A static browser game for four teams. Teams choose mystery boxes, listen to song clips, complete the missing lyrics, and decide whether to take or give the hidden points. It uses HTML, CSS, and JavaScript and does not require Node.js or npm for normal use.
 
 ## Live preview
 
 [Open the game](https://justinetolin.github.io/Dont-Forget-the-Lyrics/index.html)
 
-## Run locally
+## Play the hosted game
 
-The app uses vanilla HTML, CSS, and JavaScript, with Vite as a local development server. From the project folder, run:
+The simplest way to play is to open the [live preview](https://justinetolin.github.io/Dont-Forget-the-Lyrics/index.html) in a modern browser.
 
-```sh
-npm install
-npm run dev
-```
+## Run a local copy
 
-Open the local URL printed by Vite. The game loads `songs.csv` and its media files relative to the project, so serve it through the development server rather than opening `index.html` directly.
+Please install VS Code and add the Live Server extension.
+Right click from the `index.html` and select `Open a Live Server`.
 
 ## Project contents
 
