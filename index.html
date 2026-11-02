@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0a0e1a">
   <title>Don't Forget the Lyrics! — Live Party Edition</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="/socket.io/socket.io.js"></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -29,7 +30,8 @@
   <main class="layout">
     <aside class="team-column" id="teams-left" aria-label="Team scores"></aside>
     <section class="stage" aria-label="Game board">
-      <div class="stage-heading"><div><p class="eyebrow">The stage</p><h2>Choose a mystery box</h2></div><div class="active-turn">ACTIVE TEAM <strong id="active-team-name">Florea</strong><span class="remaining-count"><b id="remaining-boxes">16</b> BOXES LEFT</span></div></div>
+      <div class="stage-heading"><div><p class="eyebrow">The stage</p><h2>Choose a mystery box</h2><span id="buzzer-badge" class="buzzer-badge">BUZZER CONNECTING</span></div><div class="active-turn">ACTIVE TEAM <strong id="active-team-name">Florea</strong><span class="remaining-count"><b id="remaining-boxes">16</b> BOXES LEFT</span></div></div>
+      <div class="buzzer-lobby"><div><strong id="buzzer-room-label">BUZZER ROOM · CONNECTING</strong><span id="buzzer-team-counts">Florea 0 · Solaris 0 · Aurelia 0 · Frostveil 0</span></div><div class="buzzer-lobby-controls"><input id="buzzer-public-address" aria-label="Public buzzer server address" placeholder="https://your-tunnel.trycloudflare.com"><button id="set-public-address" type="button">Set server</button><input id="buzzer-invite-link" aria-label="Player invitation link" readonly><button id="copy-player-invite" type="button">Copy invite</button></div></div>
       <div id="grid" class="grid" role="grid" aria-label="Sixteen mystery boxes"></div>
       <p class="board-note">Choose carefully. The song, cutoff, and points stay secret.</p>
     </section>
@@ -59,6 +61,7 @@
       <p id="modal-kicker" class="eyebrow">Host decision</p><h2 id="modal-title">Choose what happens next</h2>
       <p id="modal-copy" class="modal-copy"></p>
       <div id="modal-options" class="modal-options"></div>
+      <div id="steal-host-panel" class="steal-host-panel" hidden></div>
       <div id="reveal-result" class="reveal-result" aria-live="polite"></div>
       <p class="modal-controls">↑ ↓ ← → move <span>·</span> Enter confirm <span>·</span> Esc back</p>
     </section>

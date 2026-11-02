@@ -60,16 +60,16 @@ flowchart TD
     G --> H[Video reaches cutoff and pauses]
     H --> I{Active team correct?}
     I -- Yes: C or Space --> J[Resume video to aftrev]
-    I -- No: X or W --> K[Open steal window; steal music loops]
-    K --> L{Steal answered correctly?}
-    L -- Yes: host selects that team --> J
-    L -- No steal or wrong steal --> M[Select No Steal / Forfeit]
-    M --> N[Forfeit cue; resume video to aftrev]
-    J --> O[Take It or Give It]
+    I -- No: X or W --> K[Host opens player buzzer window]
+    K --> L[Players buzz individually; stage lists arrival order]
+    L --> M{Host closes window and judges first eligible team}
+    M -- Correct --> J
+    M -- Incorrect or no buzz --> N[No Steal / Forfeit; resume video to aftrev]
+    J --> O[Take It or Give It appears at aftrev]
     O --> P{Give It chosen?}
     P -- Yes --> Q[Select recipient team and lock in]
     P -- No: Take It --> R[Lock in active/stealing team]
-    Q --> S[Reveal Points action: stop video and play reveal cue]
+    Q --> S[Reveal Points: stop video and play reveal cue]
     R --> S
     S --> T[Update points and show particle trail]
     N --> U[Mark box played; award no points]
@@ -87,8 +87,8 @@ flowchart TD
 3. **Pick a box:** The active team chooses any unopened box with the arrow keys. Enter reveals its hint. Escape hides the hint and returns to box picking. Enter or Space opens the video arena.
 4. **Play and answer:** Press Space to play the clip. At `cutoff`, the video pauses and the five-second on-screen countdown begins. The host judges the answer; the countdown reaching zero does not force a timeout.
 5. **Active team correct:** Press C or Space. The active-correct cue plays and the video resumes through the answer segment. At `aftrev`, Take It / Give It appears while the video continues quietly. Choose with Left/Right or 1/2, then Enter.
-6. **Active team wrong and steal window:** Press X or W. The active-wrong cue plays and the steal choices appear. Steal Round music loops while choices are open. The host selects the team that successfully buzzed first and answered correctly, then presses Enter. The steal loop stops and the video resumes through `aftrev`; the stealing team now chooses Take It or Give It.
-7. **No steal or incorrect steal:** If nobody steals, choose **No Steal / Forfeit** and press Enter. If a team buzzes but answers incorrectly, choose **No Steal / Forfeit** as well. The points-forfeit cue plays immediately, then the video continues to `aftrev` before the box is recorded as forfeited. No team receives its points.
+6. **Active team wrong and steal window:** Press X or W. The host panel opens. Open the buzzers on screen or press O. Players on the other three teams use their own phones to buzz; the stage records every individual buzz in server arrival order. The host can use a five-second auto-close or turn it off and close manually. The first eligible team is highlighted. Judge their answer, then choose **Mark [team] correct** (or press C). Their team proceeds to Take It / Give It. The window only gathers buzzes; it never marks an answer wrong automatically.
+7. **No steal or incorrect steal:** Choose **No Steal / Forfeit** (or press X) if nobody buzzed or the selected stealing team answered incorrectly. The points-forfeit cue plays, then the video continues to `aftrev` before the box is recorded as forfeited. No team receives its points.
 8. **Give points:** For Give It, choose the recipient team and press Enter. Lock In plays. The video continues behind the confirmation. Press Enter or Space on Reveal Points to stop the video and play the Points Reveal cue. After the reveal animation, the score updates and the Topup cue accompanies the particle trail.
 9. **Next turn / next round:** The game returns to the board and board ambience resumes. Each team gets one turn per round. After the last team's turn, the next round indicator appears; press Space to run that round's randomizer. After Round 3, the final scores determine the winner.
 
@@ -97,12 +97,27 @@ flowchart TD
 - **Space / Enter:** Start or advance screens; Space also starts the round randomizer from the board.
 - **Arrow keys:** Move among boxes, teams, and choices.
 - **Enter:** Confirm the selected box, team, or modal choice.
-- **Space / C:** Mark the active team's answer correct after cutoff.
-- **X / W:** Mark the active team's answer wrong and open the steal window.
+- **Space / C:** During the answer countdown, mark the active team's answer correct. In the steal modal, C marks the first eligible buzzing team correct.
+- **X / W:** During the answer countdown, mark the active team's answer wrong and open the steal modal. In the steal modal, X chooses **No Steal / Forfeit**.
+- **O:** In the steal modal, open or close the player buzzers.
 - **Left / Right** or **1 / 2:** Select Take It or Give It.
 - **Escape:** Hide a revealed hint or back out where supported.
 
 The on-screen five-second timer is only a visual countdown. Wait for the host verdict; do not treat zero as an automatic wrong answer.
+
+## Buzzer setup and use
+
+The live buzzer requires Node.js and the project server. The main stage and all large media remain served by the host's computer. GitHub Pages serves only the small phone interface. The phone page sends player names, teams, and buzzes through the Socket.IO relay; the relay decides arrival order. A Cloudflare Tunnel gives that relay a temporary public HTTPS address without exposing the stage or its video files.
+
+1. Install Node.js, open PowerShell in the project folder, and run `npm install` once.
+2. For a local trial, run `npm start` and open `http://localhost:3000`. The local player page is `http://localhost:3000/buzzer/`. Each player joins using the room code shown on the stage.
+3. For a public game, publish the `buzzer/` folder as described in the project README. In GitHub, set **Settings → Pages → Build and deployment → Source: GitHub Actions**. The workflow publishes only that folder to the Pages website. The rest of a public repository is still visible in its repository view and history.
+4. Set the Pages address before launching the stage server. In PowerShell, run `$env:BUZZER_URL = "https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/"`, then `npm start` in that same terminal.
+5. In a second terminal, run `cloudflared tunnel --url http://localhost:3001`. Copy the generated HTTPS `trycloudflare.com` address into **Public server address** on the stage and click **Set server**. Then copy the player invite link and share it. Keep both terminals and the stage browser open while playing.
+
+The tunnel must point to port **3001**, the buzzer relay. Do not tunnel port **3000**, because that serves the stage, videos, hints, and CSV. The stage connects to its local relay at `localhost:3001`; the phones connect to the public relay address embedded in the invite. The quick tunnel address changes if restarted, so set the new address and share a fresh invite after a restart. For reliable game night use, set up a stable named Cloudflare Tunnel.
+
+Players open the invite, enter the room code, name, and team, and keep the page open. The server accepts up to four player profiles per team. If the phone loses its connection, it attempts to reconnect and restores that player's registration. In the steal modal, the host can see who is connected, the buzz order, and repeat buzzes from the same team. Mark the earliest eligible team's answer correct, or choose **No Steal / Forfeit** if it is wrong or nobody buzzed. If the relay is unavailable, the stage retains manual team-selection fallback.
 
 ## Running and Testing
 

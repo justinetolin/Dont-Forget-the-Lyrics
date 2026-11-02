@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0e1a"><title>Player Buzzer · Don't Forget the Lyrics</title>
+  <link rel="stylesheet" href="buzzer.css">
+</head>
+<body>
+  <main class="phone-shell">
+    <header><span class="brand-dot">♪</span><div><p>DON'T FORGET THE LYRICS</p><h1>Player Buzzer</h1></div><span id="connection" class="connection">OFFLINE</span></header>
+    <section id="join-card" class="card">
+      <p class="eyebrow">JOIN GAME</p><label>Game code<input id="room-code" maxlength="8" autocomplete="off" placeholder="A1B2C3D4"></label>
+      <label>Your name<input id="player-name" maxlength="24" autocomplete="name" placeholder="Name shown to the host"></label>
+      <label>Your team<select id="player-team"><option value="">Choose your team</option><option value="florea">Florea</option><option value="solaris">Solaris</option><option value="aurelia">Aurelia</option><option value="frostveil">Frostveil</option></select></label>
+      <p id="join-error" class="error" role="alert"></p><button id="join-button" class="primary">Join game</button>
+    </section>
+    <section id="player-card" class="card player-card" hidden>
+      <p class="eyebrow">YOU ARE PLAYING FOR</p><h2 id="player-identity">—</h2>
+      <div id="player-status" class="player-status">Waiting for the host to open the steal window</div>
+      <button id="buzz-button" class="buzz-button" disabled>BUZZ IN</button>
+      <button id="leave-button" class="text-button">Leave game</button>
+    </section>
+    <p class="footnote">Keep this page open during the game. Your buzz is sent to the game server and shown to the host.</p>
+  </main>
+  <script src="socket.io.min.js"></script><script src="buzzer.js"></script>
+</body>
+</html>
