@@ -12,7 +12,16 @@
 <body>
   <div class="atmosphere" aria-hidden="true"></div>
   <section id="launch-screen" class="launch-screen" aria-label="Game start screen">
-    <button id="start-game" class="start-game" type="button">Start</button>
+    <div class="launch-panel">
+      <div class="launch-setup"><p class="eyebrow">Game setup</p><h2>Player buzzer</h2>
+        <strong id="launch-room-label" class="launch-room-label">Connecting to server…</strong><button class="room-eye" data-room-eye aria-label="Hide room code">◉</button>
+        <label>Public server address<input id="launch-public-address" placeholder="https://your-tunnel.trycloudflare.com"></label>
+        <div class="launch-actions"><button id="launch-set-server" type="button">Set server</button><button id="launch-copy-invite" type="button">Copy player invite</button></div>
+        <p id="launch-invite-status" class="launch-invite-status">Set your public server address, then share the invite with players.</p>
+      </div>
+      <aside class="launch-roster"><p class="eyebrow">Players ready</p><div id="launch-team-roster"></div></aside>
+      <button id="start-game" class="start-game" type="button">Start</button>
+    </div>
   </section>
   <section id="title-card" class="title-card" aria-hidden="true" aria-label="Don't Forget the Lyrics title card">
     <div class="title-card-content">
@@ -30,12 +39,11 @@
   <main class="layout">
     <aside class="team-column" id="teams-left" aria-label="Team scores"></aside>
     <section class="stage" aria-label="Game board">
-      <div class="stage-heading"><div><p class="eyebrow">The stage</p><h2>Choose a mystery box</h2><span id="buzzer-badge" class="buzzer-badge">BUZZER CONNECTING</span></div><div class="active-turn">ACTIVE TEAM <strong id="active-team-name">Florea</strong><span class="remaining-count"><b id="remaining-boxes">16</b> BOXES LEFT</span></div></div>
-      <div class="buzzer-lobby"><div><strong id="buzzer-room-label">BUZZER ROOM · CONNECTING</strong><span id="buzzer-team-counts">Florea 0 · Solaris 0 · Aurelia 0 · Frostveil 0</span></div><div class="buzzer-lobby-controls"><input id="buzzer-public-address" aria-label="Public buzzer server address" placeholder="https://your-tunnel.trycloudflare.com"><button id="set-public-address" type="button">Set server</button><input id="buzzer-invite-link" aria-label="Player invitation link" readonly><button id="copy-player-invite" type="button">Copy invite</button></div></div>
+      <div class="stage-heading"><div><p class="eyebrow">The stage</p><h2>Choose a mystery box</h2></div><div class="active-turn">ACTIVE TEAM <strong id="active-team-name">Florea</strong><span class="remaining-count"><b id="remaining-boxes">16</b> BOXES LEFT</span></div></div>
       <div id="grid" class="grid" role="grid" aria-label="Sixteen mystery boxes"></div>
       <p class="board-note">Choose carefully. The song, cutoff, and points stay secret.</p>
     </section>
-    <aside class="team-column" id="teams-right" aria-label="Team scores"></aside>
+    <aside class="team-column" id="teams-right" aria-label="Team scores"><div id="teams-right-cards"></div></aside>
   </main>
 
   <footer class="footer"><span>♪</span> Follow the melody. Trust your memory.</footer>
@@ -43,6 +51,8 @@
     <button id="cue-volume-button" type="button" aria-label="Adjust audio cue volume">♫</button>
     <input id="cue-volume-slider" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Audio cue volume">
   </div>
+  <button id="buzzer-settings-button" class="buzzer-settings-button" type="button" title="Buzzer settings" aria-label="Buzzer settings">⚙</button>
+  <div id="buzzer-settings-modal" class="buzzer-settings-modal" hidden><section><button id="close-buzzer-settings" class="settings-close" type="button" aria-label="Close settings">×</button><p class="eyebrow">Buzzer settings</p><h2>Player access</h2><strong id="settings-room-label"></strong><button class="room-eye" data-room-eye aria-label="Hide room code">◉</button><details class="server-settings"><summary>Server settings</summary><label>Public server address<input id="settings-public-address" placeholder="https://your-tunnel.trycloudflare.com"></label><div class="launch-actions"><button id="settings-set-server" type="button">Set server</button><button id="settings-copy-invite" type="button">Copy player invite</button></div></details><p id="settings-status"></p></section></div>
 
   </div>
   <section id="arena" class="arena" aria-hidden="true">

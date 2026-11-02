@@ -54,7 +54,7 @@ const socketServer = http.createServer();
 const io = new Server(socketServer, { cors: { origin: true, methods: ["GET", "POST"] }, maxHttpBufferSize: 10_000 });
 const TEAM_NAMES = { florea: "Florea", solaris: "Solaris", aurelia: "Aurelia", frostveil: "Frostveil" };
 function publicState(game) {
-  const joinLink = `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}`;
+  const joinLink = `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}&room=${encodeURIComponent(game.code)}`;
   return { code: game.code, activeTeam: game.activeTeam, publicServerUrl: game.publicServerUrl, joinLink, window: game.window ? { open: game.window.open, autoClose: game.window.autoClose, duration: game.window.duration, closesAt: game.window.closesAt } : null,
     players: [...game.players.values()].map(({ id, name, team, connected }) => ({ id, name, team, teamName: TEAM_NAMES[team], connected })),
     buzzes: game.buzzes.map((buzz, index) => ({ ...buzz, order: index + 1, teamName: TEAM_NAMES[buzz.team] })) };
@@ -68,14 +68,14 @@ io.on("connection", socket => {
     if (!game || !payload.hostKey || payload.hostKey !== game.hostKey) return ack({ ok: false, error: "Host session not found. Create a new room." });
     game.hostId = socket.id;
     socket.join(game.code);
-    ack({ ok: true, code: game.code, hostKey: game.hostKey, buzzerUrl: `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}` });
+    ack({ ok: true, code: game.code, hostKey: game.hostKey, buzzerUrl: `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}&room=${encodeURIComponent(game.code)}` });
     broadcast(game);
   });
   socket.on("host:create", (_, ack = () => {}) => {
     const code = makeCode();
     const game = { code, hostId: socket.id, hostKey: crypto.randomBytes(24).toString("hex"), activeTeam: null, players: new Map(), buzzes: [], window: null, timer: null, publicServerUrl: PUBLIC_SERVER_URL, buzzerPageUrl: BUZZER_URL };
     games.set(code, game); socket.join(code);
-    const joinUrl = `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}`;
+    const joinUrl = `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}&room=${encodeURIComponent(game.code)}`;
     ack({ ok: true, code, hostKey: game.hostKey, buzzerUrl: joinUrl });
     broadcast(game);
   });

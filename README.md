@@ -11,6 +11,8 @@ npm install
 npm start
 ```
 
+On Windows, you can instead double-click **`Start Game.bat`**. It opens separate PowerShell windows for the stage and the Cloudflare tunnel, and sets the GitHub Pages buzzer URL for the stage. After the tunnel window prints its `trycloudflare.com` address, paste that address into **Public server address** on the stage, click **Set server**, and then click **Copy invite**. The script starts both processes; the stage still needs the generated tunnel address so it can create the correct player invite.
+
 Open `http://localhost:3000`. The main stage and media are served from your computer. The Socket.IO relay listens separately on port `3001`; the public tunnel should expose **only port 3001**, never the stage server on port 3000.
 
 The buzzer page is available locally at `http://localhost:3000/buzzer/`. This is useful for local testing. For players joining from the internet, deploy the contents of `buzzer/` to GitHub Pages and connect it to the public relay URL as described below.
@@ -59,7 +61,11 @@ The stage will append the relay address and room code to that buzzer page URL. I
 - The first eligible team can be marked correct. If that team answers incorrectly, or no team buzzes, choose **No Steal / Forfeit**.
 - If the server disconnects, the stage offers manual team selection as a fallback.
 
-Keyboard shortcuts during the steal modal: **O** opens/closes the buzz window, **C** marks the first eligible team correct, and **X** chooses **No Steal / Forfeit**.
+The start page shows `ROOM CODE: <code>` and the live player roster before you start. The eye control toggles the displayed code between the actual code and `****` on the start page, in stage settings, and in the steal modal. Invite links include the room code, so phones fill it automatically.
+
+In the rectangular steal modal, **O** opens/closes buzzers, **1–3** highlights a team card at the top for manual override and **Enter** confirms, **C** marks the first eligible buzz team correct, and **X** selects **No Steal / Forfeit**. The panel shows per-team first-buzz timing and the complete player arrival order. Shortcut guidance appears along its bottom. Buzz state clears when the modal closes. Player phones show the current host/steal state and clear their previous buzz status after the window ends.
+
+In the song arena, use **C** to mark correct and **X** to mark wrong. Space no longer triggers the correct decision there.
 
 ## Project contents
 

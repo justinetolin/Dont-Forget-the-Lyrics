@@ -1,15 +1,17 @@
 (() => {
   const params = new URLSearchParams(location.search);
   const serverUrl = params.get("server") || location.origin;
+  const roomFromInvite = params.get("room") || "";
   const socket = io(serverUrl, { transports: ["websocket", "polling"], reconnection: true, reconnectionAttempts: Infinity, reconnectionDelayMax: 4000 });
   const $ = id => document.getElementById(id);
   let me = null, activeTeam = null, lastState = null;
-  const teamLabels = { florea: "Florea", solaris: "Solaris", aurelia: "Aurelia", frostveil: "Frostveil" };
   function status(text, mode = "") { $("player-status").textContent = text; $("player-status").className = `player-status ${mode}`; }
   function applyState(s) {
     lastState = s; activeTeam = s.activeTeam;
     if (!me) return;
     const myBuzz = s.buzzes.find(b => b.playerId === me.playerId);
+    if (!s.window && !s.activeTeam) { $("buzz-button").disabled = true; status("Waiting for the host to start the game"); return; }
+    if (!s.window?.open && !myBuzz) { $("buzz-button").disabled = true; status(s.activeTeam ? `${s.activeTeam} is selecting a box. Get ready to steal!` : "Waiting for the steal window"); return; }
     if (myBuzz) { $("buzz-button").disabled = true; status(`Buzz received · #${s.buzzes.findIndex(b => b.playerId === myBuzz.playerId) + 1} in order`, "locked"); return; }
     if (!s.window?.open) { $("buzz-button").disabled = true; status("Waiting for the host to open the steal window"); return; }
     if (me.team === s.activeTeam) { $("buzz-button").disabled = true; status("Your team is the active team this turn"); return; }
@@ -44,5 +46,6 @@
   $("leave-button").addEventListener("click", () => { socket.emit("player:leave"); me = null; sessionStorage.removeItem("lyrics-buzzer"); sessionStorage.removeItem("lyrics-buzzer-id"); $("player-card").hidden = true; $("join-card").hidden = false; });
   $("room-code").addEventListener("input", e => { e.currentTarget.value = e.currentTarget.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); });
   const saved = sessionStorage.getItem("lyrics-buzzer");
+  if (roomFromInvite) { $("room-code").value = roomFromInvite.toUpperCase(); $("room-code").readOnly = true; }
   if (saved) { try { const p = JSON.parse(saved); $("room-code").value = p.code; $("player-name").value = p.name; $("player-team").value = p.team; me = p; $("join-button").textContent = "Reconnect to game"; } catch {} }
 })();

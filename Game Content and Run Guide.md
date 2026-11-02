@@ -119,6 +119,12 @@ The tunnel must point to port **3001**, the buzzer relay. Do not tunnel port **3
 
 Players open the invite, enter the room code, name, and team, and keep the page open. The server accepts up to four player profiles per team. If the phone loses its connection, it attempts to reconnect and restores that player's registration. In the steal modal, the host can see who is connected, the buzz order, and repeat buzzes from the same team. Mark the earliest eligible team's answer correct, or choose **No Steal / Forfeit** if it is wrong or nobody buzzed. If the relay is unavailable, the stage retains manual team-selection fallback.
 
+The invite carries the room code, so it is prefilled on the phone page. The opening screen shows `ROOM CODE: <code>` and the live roster grouped by team before **Start**. The eye button on the opening screen, in stage settings, and in the steal window toggles the display between the code and `****`; the code is visible by default. Open stage settings using the gear beside the audio-cue volume control. Server settings are collapsible and the room code remains outside that section.
+
+The steal window is a wide rectangular panel. On the left are the open/close, correct, and No Steal / Forfeit buttons and auto-close settings. Use **1**, **2**, or **3** to highlight a team card at the top, then **Enter** to confirm a manual override. The right side shows team buzz times and the full arrival-order list. Shortcut instructions appear along the panel bottom. The buzz list and the phone's buzz confirmation clear when the steal modal closes.
+
+Players see whether they are waiting for the game, their team is currently active, or the steal window is open. In the song arena, use **C** for correct and **X** for wrong; Space is not a correct-answer shortcut there.
+
 ## Running and Testing
 
 You can test run with the placeholders I currently have for Songs 1 to 4. However, I recommend downloading this entire repository and running your own server so the videos and images load quickly and no delays.

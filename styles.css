@@ -197,7 +197,26 @@ h1 { margin: 0; color: var(--gold); font-size: clamp(22px, 3vw, 34px); letter-sp
 .buzzer-lobby-controls { display: grid; grid-template-columns: minmax(100px,1fr) auto minmax(100px,1.25fr) auto; gap: 5px; }
 .buzzer-lobby-controls input { min-width: 0; height: 26px; padding: 3px 6px; border: 1px solid #ffffff25; border-radius: 4px; color: #cbd5e1; background: #090d19; font-size: 8px; }
 .buzzer-lobby-controls button { padding: 2px 6px; border: 1px solid #ffffff26; border-radius: 4px; color: var(--paper); background: #263449; font-size: 8px; font-weight: 800; cursor: pointer; }
-.steal-host-panel { width: min(680px, 100%); margin: 16px auto 0; text-align: left; }
+.steal-host-panel { width: min(980px, 96vw); margin: 12px auto 0; text-align: left; }
+.game-modal:has(.steal-host-panel:not([hidden])) { width: min(1040px,96vw); border-radius: 14px; text-align:left; }
+.steal-columns { display:grid; grid-template-columns:minmax(260px,.8fr) minmax(350px,1.2fr); gap:16px; }
+.steal-left,.steal-right { min-width:0; padding:12px; border:1px solid #ffffff20; border-radius:10px; background:#060a16aa; }
+.steal-right>p { margin:0 0 8px; color:var(--gold); font-size:10px; font-weight:900; letter-spacing:.15em; }
+.manual-buzz-list { display:grid; gap:5px; margin:8px 0; }
+.manual-buzz-team { display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:8px; padding:8px; border:1px solid #ffffff22; border-radius:6px; background:#ffffff08; color:var(--paper); cursor:pointer; text-align:left; }
+.manual-buzz-team[aria-current=true],.manual-buzz-team:focus { outline:2px solid var(--gold); background:#facc1520; }
+.manual-buzz-team kbd { color:var(--gold); }.manual-buzz-team span { color:var(--muted); font-size:10px; }
+.room-eye { margin-left:8px; padding:2px 7px; border:1px solid #ffffff2b; border-radius:6px; color:var(--gold); background:#ffffff10; cursor:pointer; }
+.server-settings { margin-top:12px; color:var(--muted); font-size:11px; }.server-settings summary,.steal-server-settings summary { cursor:pointer; }
+.buzzer-settings-button { position:fixed; z-index:5; left:64px; bottom:21px; align-self:auto; }
+.buzzer-settings-modal #settings-room-label { display:inline-block; margin:8px 0; color:#86efac; letter-spacing:.14em; }
+.steal-server-settings { margin-top:8px; color:var(--muted); font-size:10px; }
+.room-code-line { display:flex; align-items:center; justify-content:flex-start; gap:8px; margin-bottom:10px; color:#86efac; font-size:11px; letter-spacing:.08em; }
+.team-buzz-times { display:grid; gap:4px; margin:10px 0; color:var(--muted); font-size:10px; }
+.team-card.manual-selected { outline:3px solid #38bdf8; outline-offset:2px; transform:translateY(-5px) scale(1.02); }
+.steal-shortcuts { margin:12px 0 0; color:#cbd5e1; font-size:10px; text-align:center; }
+.steal-actions button::first-letter { color:inherit; }
+@media(max-width:650px){.steal-columns{grid-template-columns:1fr}.game-modal:has(.steal-host-panel:not([hidden])){max-height:90dvh;overflow:auto}}
 .steal-host-panel[hidden] { display: none; }
 .steal-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 9px; background: #090d19; color: var(--paper); font-size: 11px; letter-spacing: .1em; }
 .steal-toolbar>div { display: flex; align-items: center; gap: 8px; }
@@ -234,6 +253,31 @@ h1 { margin: 0; color: var(--gold); font-size: clamp(22px, 3vw, 34px); letter-sp
 .manual-buzzer-fallback { margin-top: 8px; color: var(--muted); font-size: 10px; }
 .manual-buzzer-fallback div { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .manual-buzzer-fallback button { min-height: 30px; }
+
+.launch-screen { padding: 24px; }
+.launch-panel { width: min(900px, 94vw); display: grid; grid-template-columns: 1fr minmax(220px,.8fr); gap: 18px; padding: clamp(18px,3vw,32px); border: 1px solid #facc1555; border-radius: 20px; background: #0b1020ed; box-shadow: 0 26px 90px #000b; animation: titleRise .55s ease-out both; }
+.launch-setup h2,.buzzer-settings-modal h2 { margin: 0 0 12px; color: var(--paper); font-size: 22px; }
+.launch-room-label { display: inline-flex; margin: 2px 0 8px; color: #86efac; font-size: 12px; letter-spacing: .12em; }
+.launch-setup label,.buzzer-settings-modal label { display: block; margin: 8px 0; color: var(--muted); font-size: 11px; }
+.launch-setup input,.buzzer-settings-modal input { width: 100%; height: 38px; margin-top: 5px; padding: 7px 10px; border: 1px solid #ffffff2a; border-radius: 7px; background: #080c17; color: var(--paper); }
+.launch-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+.launch-actions button { padding: 9px 12px; border: 1px solid #facc1555; border-radius: 7px; background: #202a3d; color: var(--paper); cursor: pointer; font-size: 11px; font-weight: 800; }
+.launch-actions button:first-child { background: var(--gold); color: var(--void); }
+.launch-invite-status,#settings-status { min-height: 16px; margin: 8px 0 0; color: var(--muted); font-size: 10px; overflow-wrap: anywhere; }
+.launch-roster { max-height: 43vh; overflow: auto; padding: 0 4px; }
+.ready-team { margin: 5px 0 9px; padding: 8px 10px; border: 1px solid #ffffff1c; border-radius: 8px; background: #ffffff08; }
+.ready-team>strong { display: flex; justify-content: space-between; color: var(--paper); font-size: 11px; }
+.ready-team>strong span { color: var(--gold); font-size: 9px; }
+.ready-team ul { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 6px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 10px; }
+.ready-team li.online { color: #bbf7d0; }.ready-team li.empty,.ready-team li.offline { color: #94a3b8; }
+.launch-panel .start-game { grid-column: 1 / -1; justify-self: center; min-width: 190px; }
+.buzzer-settings-button { align-self: end; justify-self: end; width: 32px; height: 32px; padding: 0; border: 1px solid #facc1555; border-radius: 50%; color: var(--gold); background: #090d19cc; cursor: pointer; }
+.buzzer-settings-modal { position: fixed; z-index: 45; inset: 0; display: grid; place-items: center; padding: 20px; background: #050711bb; backdrop-filter: blur(5px); }
+.buzzer-settings-modal[hidden] { display: none; }
+.buzzer-settings-modal>section { position: relative; width: min(440px,94vw); padding: 26px; border: 1px solid #facc1555; border-radius: 16px; background: #101629; box-shadow: var(--shadow); }
+.settings-close { position: absolute; top: 8px; right: 10px; border: 0; background: none; color: var(--paper); font-size: 24px; cursor: pointer; }
+.room-code-hidden #launch-room-label,.room-code-hidden #settings-room-label { filter: blur(7px); user-select: none; }
+@media (max-width:600px) { .launch-panel { grid-template-columns: 1fr; }.launch-panel .start-game { grid-column: 1; }.launch-roster { max-height: 28vh; } }
 @keyframes buzzPulse { 50% { opacity: .4; } }
 @keyframes optionArrive { to { transform: translateY(0) scale(1); } }
 .modal-options:has(.team-option) { grid-template-columns: repeat(3, minmax(90px, 1fr)); }
