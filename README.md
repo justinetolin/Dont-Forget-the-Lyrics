@@ -17,16 +17,6 @@ Open `http://localhost:3000`. The main stage and media are served from your comp
 
 The buzzer page is available locally at `http://localhost:3000/buzzer/`. This is useful for local testing. For players joining from the internet, deploy the contents of `buzzer/` to GitHub Pages and connect it to the public relay URL as described below.
 
-## Publish the buzzer page from this repository
-
-The workflow in `.github/workflows/publish-buzzer.yml` deploys only the `buzzer/` folder as the GitHub Pages website. In the repository’s **Settings → Pages**, set the build and deployment source to **GitHub Actions**. Push the workflow and buzzer files to `main`, then wait for the Pages deployment to finish. Its URL will look like:
-
-```text
-https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/
-```
-
-This limits what the Pages website serves. Files committed elsewhere in a public repository are still viewable through the repository itself and its Git history.
-
 ## Let players connect over the internet
 
 The relay is on port `3001`, separate from the server that serves `index.html`, videos, hints, and songs. Use a tunnel to expose port 3001 without exposing the media server or configuring router port forwarding.
@@ -74,3 +64,7 @@ In the song arena, use **C** to mark correct and **X** to mark wrong. Space no l
 - `buzzer/` — standalone player join and buzzer webpage.
 - `songs.csv`, `songs/`, `hints/`, `teams/`, `audios/`, `bg.png` — game content and media.
 - [Game Content and Run Guide](Game%20Content%20and%20Run%20Guide.md) — content preparation, game flow, keyboard reference, and host script.
+
+## Snapshot
+
+![alt text](snapshot3.png)
