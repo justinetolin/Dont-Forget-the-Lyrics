@@ -25,7 +25,7 @@ const video = $("#song-video");
 const backdrop = $("#modal-backdrop");
 const cues = Object.fromEntries([["theme","1 Game Theme"],["board","2 Board Ambience"],["round","3 Round Sting"],["randomizer","4 Randomizer"],["select","5 Box Selection"],["hint","6 Hint Reveal"],["correct","7 Active Correct"],["wrong","8 Active Wrong"],["steal","9 Steal Round"],["lock","10 Lock In"],["forfeit","11 Points Forfeit"],["reveal","12 Points Reveal"],["topup","13 Points Topup"]].map(([k,n])=>[k,new Audio(`audios/${n}.mp3`)]));
 let cueVolume = 0.8;
-let roomCodeVisible = true;
+let roomCodeVisible = false;
 function cue(k,loop=false){const a=cues[k];if(a){a.loop=loop;if(k!=="theme")a.volume=cueVolume;a.currentTime=0;a.play().catch(()=>{});}}
 function stopCue(k){const a=cues[k];if(a){a.pause();a.currentTime=0;a.loop=false;}}
 
@@ -74,7 +74,7 @@ function renderTeams() {
     <img class="team-logo" src="${team.logo}" alt="" onerror="this.style.visibility='hidden'">
     <div class="team-name">${team.name}</div><div class="team-score" id="score-${team.id}">${state.scores[team.id]}</div></article>`;
   $("#teams-left").innerHTML = TEAMS.slice(0, 2).map(renderCard).join("");
-  $("#teams-right-cards").innerHTML = TEAMS.slice(2).map(renderCard).join("");
+  $("#teams-right").innerHTML = TEAMS.slice(2).map(renderCard).join("");
   $("#active-team-name").textContent = state.started ? TEAMS[state.activeIndex].name : "Awaiting draw";
   $("#remaining-boxes").textContent = state.songs.length - state.played.size;
 }
@@ -261,6 +261,7 @@ function controllingTeamId() {
 
 function handleWrong() {
   if (state.flow !== "countdown") return;
+  state.manualStealTeam = null;
   clearInterval(state.countdownTimer);
   state.countdownTimer = null;
   $("#countdown").textContent = "";
@@ -336,7 +337,13 @@ function openModal(title, copy, options, flow) {
   $("#reveal-result").classList.remove("show");
   $("#reveal-result").textContent = "";
   $(".game-modal").classList.remove("suspense");
-  renderOptions();
+  if (flow === "steal") {
+    $("#modal-options").innerHTML = "";
+    $("#modal-options").hidden = true;
+  } else {
+    renderOptions();
+    $("#modal-options").hidden = false;
+  }
   const blurStage = flow === "steal";
   backdrop.classList.toggle("blurred-stage", blurStage);
   backdrop.classList.toggle("clear-stage", !blurStage);
@@ -377,12 +384,17 @@ function renderStealHostPanel() {
   }).join("");
   const rows = buzzes.length ? buzzes.map((buzz, index) => {
     const duplicate = buzz.duplicate;
-    return `<li class="${index === 0 ? "first-buzz" : ""} ${duplicate ? "duplicate-buzz" : ""}"><b>${String(index + 1).padStart(2,"0")}</b><span>${escapeHtml(buzz.name)}</span><em>${escapeHtml(buzz.teamName)}</em>${duplicate ? `<small>same team already queued</small>` : ""}</li>`;
+    return `<li class="${index === 0 ? "first-buzz" : ""} ${duplicate ? "duplicate-buzz" : ""}"><b>${String(index + 1).padStart(2,"00")}</b><span>${escapeHtml(buzz.name)}</span><em>${escapeHtml(buzz.teamName)}</em>${duplicate ? `<small>same team already queued</small>` : ""}</li>`;
   }).join("") : `<li class="empty-buzzes">No buzzes received yet</li>`;
+  const stealTeams = TEAMS.filter(t => t.id !== activeTeam.id);
+  const manualTeamRows = stealTeams.map((team, i) => {
+    const isSelected = state.manualStealTeam === team.id;
+    return `<button type="button" class="manual-steal-team${isSelected ? " is-selected" : ""}" data-steal-team="${team.id}"><kbd>${i + 1}</kbd><img src="${team.logo}" alt=""><span>${team.name}</span>${isSelected ? `<span class="steal-sel-badge">&#x2714; SELECTED</span>` : ""}</button>`;
+  }).join("");
+  const manualConfirmBtn = state.manualStealTeam ? `<button type="button" class="manual-steal-confirm" id="manual-steal-confirm">&#x2714; Confirm ${escapeHtml(TEAMS.find(t=>t.id===state.manualStealTeam)?.name || "")}</button>` : "";
   const teamTimes = TEAMS.filter(team => team.id !== activeTeam.id).map(team => { const firstBuzz = buzzes.find(x => x.team === team.id); const elapsed = firstBuzz ? ((firstBuzz.receivedAt - (buzzes[0]?.receivedAt || firstBuzz.receivedAt)) / 1000).toFixed(2) + "s" : "—"; return `<span><b>${team.name}</b> ${elapsed}</span>`; }).join("");
   const remaining = snap?.window?.closesAt ? Math.max(0, (snap.window.closesAt - Date.now()) / 1000).toFixed(1) : null;
-  $("#steal-host-panel").innerHTML = `<div class="steal-toolbar"><div><span class="live-dot ${windowOpen ? "is-live" : ""}"></span><strong>${windowOpen ? "BUZZERS OPEN" : "BUZZERS CLOSED"}</strong></div><span class="steal-clock">${remaining ?? (windowOpen ? "∞" : "—")}</span></div>
-    <div class="steal-columns"><div class="steal-left"><div class="room-code-line"><b id="steal-room-code">ROOM CODE: ${roomCodeVisible ? (b.code || "--------") : "**********"}</b><button type="button" class="room-eye" data-room-eye>◉</button></div><div class="steal-actions"><button type="button" data-buzzer-action="toggle" ${!b.connected ? "disabled" : ""}>${windowOpen ? "Close buzzers" : "Open buzzers"}</button><button type="button" class="correct-buzz" data-buzzer-action="correct" ${!first ? "disabled" : ""}>${first ? `Mark ${escapeHtml(TEAMS.find(t=>t.id===first.team)?.name || first.team)} correct` : "No valid buzz"}</button><button type="button" class="forfeit-buzz" data-buzzer-action="forfeit">No Steal / Forfeit</button></div><div class="buzzer-settings"><label><input id="buzzer-auto-close" type="checkbox" ${b.autoClose ? "checked" : ""}> Auto-close</label><label>Seconds <input id="buzzer-duration" type="number" min="1" max="60" value="${b.duration}" ${b.autoClose ? "" : "disabled"}></label></div><div class="team-buzz-times">${teamTimes}</div><details class="steal-server-settings"><summary>Server settings</summary>${b.connected ? `<div class="buzzer-endpoint"><label>Public address <input id="buzzer-public-url" value="${escapeHtml(snap?.publicServerUrl || location.origin)}"></label><button type="button" id="save-buzzer-url">Set</button></div><button type="button" id="copy-buzzer-link">Copy player link</button>` : "Buzzer offline"}</details><p id="buzzer-host-status" class="buzzer-host-status">${b.connected ? `${snap?.players?.filter(p=>p.connected).length || 0} players connected` : "Manual team selection available"}</p></div><div class="steal-right"><p>BUZZ ORDER</p><ol class="buzz-order">${rows}</ol></div></div><p class="steal-shortcuts">O open/close · 1–3 select highlighted team above, Enter confirm · C correct · X no steal / forfeit</p>`;
+  $("#steal-host-panel").innerHTML = `<div class="steal-toolbar"><div><span class="live-dot ${windowOpen ? "is-live" : ""}" ></span><strong>${windowOpen ? "BUZZERS OPEN" : "BUZZERS CLOSED"}</strong></div><span class="steal-clock">${remaining ?? (windowOpen ? "\u221e" : "\u2014")}</span></div><div class="steal-columns"><div class="steal-left"><div class="room-code-line"><b id="steal-room-code">ROOM CODE: ${roomCodeVisible ? (b.code || "--------") : "**********"}</b><button type="button" class="room-eye" data-room-eye>${roomCodeVisible ? "\ud83d\ude48" : "\ud83d\udc41"}</button></div><div class="steal-actions"><button type="button" data-buzzer-action="toggle" ${!b.connected ? "disabled" : ""}>${windowOpen ? "Close buzzers" : "Open buzzers"}</button><button type="button" class="correct-buzz" data-buzzer-action="correct" ${!first ? "disabled" : ""}>${first ? `Mark ${escapeHtml(TEAMS.find(t=>t.id===first.team)?.name || first.team)} correct` : "No valid buzz"}</button><button type="button" class="forfeit-buzz" data-buzzer-action="forfeit">No Steal / Forfeit</button></div><div class="buzzer-settings"><label><input id="buzzer-auto-close" type="checkbox" ${b.autoClose ? "checked" : ""}> Auto-close</label><label>Seconds <input id="buzzer-duration" type="number" min="1" max="60" value="${b.duration}" ${b.autoClose ? "": "disabled"}></label></div><div class="team-buzz-times">${teamTimes}</div><details class="steal-server-settings"><summary>Server settings</summary>${b.connected ? `<div class="buzzer-endpoint"><label>Public address <input id="buzzer-public-url" value="${escapeHtml(snap?.publicServerUrl || location.origin)}"></label><button type="button" id="save-buzzer-url">Set</button></div><button type="button" id="copy-buzzer-link">Copy player link</button>` : "Buzzer offline"}</details><p id="buzzer-host-status" class="buzzer-host-status">${b.connected ? `${snap?.players?.filter(p=>p.connected).length || 0} players connected` : "Manual team selection available"}</p></div><div class="steal-right"><p>BUZZ ORDER</p><ol class="buzz-order">${rows}</ol><div class="manual-steal-section"><p class="manual-steal-label">MANUAL OVERRIDE — press 1–3, then Enter</p><div class="manual-steal-teams">${manualTeamRows}</div>${manualConfirmBtn}</div></div></div><p class="steal-shortcuts">O open/close · 1–3 select team · Enter confirm · C correct buzz · X forfeit</p>`;
   $("#buzzer-auto-close").addEventListener("change", event => { b.autoClose = event.target.checked; renderStealHostPanel(); });
   $("#buzzer-duration").addEventListener("input", event => { b.duration = Math.max(1, Math.min(60, Number(event.target.value) || 5)); });
   $("#copy-buzzer-link")?.addEventListener("click", async () => { const link = snap?.joinLink || b.buzzerUrl; try { await navigator.clipboard.writeText(link); $("#buzzer-host-status").textContent = "Player link copied. Share it with the teams."; } catch { $("#buzzer-share-link").select(); document.execCommand("copy"); } });
@@ -399,7 +411,8 @@ function renderStealHostPanel() {
     const option = state.modalOptions[Number(button.dataset.manualTeam)];
     if (option?.value) { buzzerCommand("reset"); state.winner = option.value; beginAnswerPlayback(false); }
   }));
-  $("#steal-host-panel").querySelectorAll("[data-team-id]").forEach(button => button.addEventListener("click", () => { state.manualStealTeam = button.dataset.teamId; button.focus(); }));
+  $("#steal-host-panel").querySelectorAll("[data-steal-team]").forEach(button => button.addEventListener("click", () => { state.manualStealTeam = button.dataset.stealTeam; renderStealHostPanel(); }));
+  $("#manual-steal-confirm")?.addEventListener("click", () => { if (state.manualStealTeam) { buzzerCommand("reset"); state.winner = state.manualStealTeam; state.manualStealTeam = null; beginAnswerPlayback(false); } });
   $("#steal-host-panel").querySelectorAll("button,input,summary").forEach(el => el.addEventListener("blur", () => setTimeout(() => { if (state.flow === "steal" && !$("#steal-host-panel").contains(document.activeElement)) backdrop.focus(); }, 0)));
   clearInterval(b.countdownTimer);
   if (windowOpen && snap?.window?.closesAt) b.countdownTimer = setInterval(() => {
@@ -446,7 +459,7 @@ function updateBuzzerBadge() {
     badge.title = b.connected ? `Player link: ${b.buzzerUrl}` : "Start the Node game server to enable buzzers";
   }
   const snapshot = b.snapshot;
-  const roomText = `ROOM CODE: ${roomCodeVisible ? (b.code || "--------") : "****"}`;
+  const roomText = `ROOM CODE: ${roomCodeVisible ? (b.code || "--------") : "**********"}`;
   if ($("#launch-room-label")) $("#launch-room-label").textContent = roomText;
   if ($("#settings-room-label")) $("#settings-room-label").textContent = roomText;
   const roster = TEAMS.map(team => {
@@ -737,8 +750,8 @@ document.addEventListener("keydown", event => {
       if (event.key.toLowerCase() === "o") { if (state.buzzer.snapshot?.window?.open) buzzerCommand("close"); else buzzerCommand("open", { activeTeam: TEAMS[state.activeIndex].id, autoClose: state.buzzer.autoClose, duration: state.buzzer.duration }); }
       else if (event.key.toLowerCase() === "c") $("#steal-host-panel [data-buzzer-action='correct']")?.click();
       else if (event.key.toLowerCase() === "x") $("#steal-host-panel [data-buzzer-action='forfeit']")?.click();
-      else if (["1", "2", "3"].includes(event.key)) { const team = TEAMS.filter(t => t.id !== TEAMS[state.activeIndex].id)[Number(event.key) - 1]; if (team) { state.manualStealTeam = team.id; renderTeams(); } }
-      else if (event.key === "Enter" && state.manualStealTeam) { state.winner = state.manualStealTeam; beginAnswerPlayback(false); }
+      else if (["1", "2", "3"].includes(event.key)) { const team = TEAMS.filter(t => t.id !== TEAMS[state.activeIndex].id)[Number(event.key) - 1]; if (team) { state.manualStealTeam = team.id; renderTeams(); renderStealHostPanel(); } }
+      else if (event.key === "Enter" && state.manualStealTeam) { buzzerCommand("reset"); state.winner = state.manualStealTeam; state.manualStealTeam = null; beginAnswerPlayback(false); }
       else if (event.key === "Escape") cancelFlow();
     } else if (state.flow === "target") {
       if (event.key === "ArrowDown" || event.key === "ArrowRight") moveOption(1);
@@ -781,9 +794,13 @@ async function init() {
     renderGrid();
     setHub("Ready", "Space: randomize the team order");
     connectBuzzerHost();
-    const configure = selector => buzzerCommand("configure", { publicServerUrl: $(selector).value.trim() });
-    $("#launch-set-server").addEventListener("click", () => configure("#launch-public-address"));
-    $("#settings-set-server").addEventListener("click", () => configure("#settings-public-address"));
+    const setServerWithFeedback = (inputSelector, statusSelector) => {
+      buzzerCommand("configure", { publicServerUrl: $(inputSelector).value.trim() });
+      $(statusSelector).textContent = "Server set successfully!";
+      setTimeout(() => { if ($(statusSelector).textContent === "Server set successfully!") $(statusSelector).textContent = ""; }, 2500);
+    };
+    $("#launch-set-server").addEventListener("click", () => setServerWithFeedback("#launch-public-address", "#launch-invite-status"));
+    $("#settings-set-server").addEventListener("click", () => setServerWithFeedback("#settings-public-address", "#settings-status"));
     const copyInvite = async statusSelector => {
       const link = state.buzzer.snapshot?.joinLink || state.buzzer.buzzerUrl;
       if (!link) { $(statusSelector).textContent = "Waiting for the buzzer server to connect."; return; }

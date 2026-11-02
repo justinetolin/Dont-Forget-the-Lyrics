@@ -61,7 +61,7 @@ The stage will append the relay address and room code to that buzzer page URL. I
 - The first eligible team can be marked correct. If that team answers incorrectly, or no team buzzes, choose **No Steal / Forfeit**.
 - If the server disconnects, the stage offers manual team selection as a fallback.
 
-The start page shows `ROOM CODE: <code>` and the live player roster before you start. The eye control toggles the displayed code between the actual code and `****` on the start page, in stage settings, and in the steal modal. Invite links include the room code, so phones fill it automatically.
+The start page shows `ROOM CODE: **********` and the live player roster before you start. Room codes are hidden by default; the eye control toggles between the mask and the actual code on the start page, in stage settings, and in the steal modal. Invite links include the room code, so phones fill it automatically.
 
 In the rectangular steal modal, **O** opens/closes buzzers, **1–3** highlights a team card at the top for manual override and **Enter** confirms, **C** marks the first eligible buzz team correct, and **X** selects **No Steal / Forfeit**. The panel shows per-team first-buzz timing and the complete player arrival order. Shortcut guidance appears along its bottom. Buzz state clears when the modal closes. Player phones show the current host/steal state and clear their previous buzz status after the window ends.
 

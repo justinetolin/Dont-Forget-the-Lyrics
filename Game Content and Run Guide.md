@@ -59,7 +59,7 @@ flowchart TD
     F --> G[Reveal hint, then open video]
     G --> H[Video reaches cutoff and pauses]
     H --> I{Active team correct?}
-    I -- Yes: C or Space --> J[Resume video to aftrev]
+    I -- Yes: C --> J[Resume video to aftrev]
     I -- No: X or W --> K[Host opens player buzzer window]
     K --> L[Players buzz individually; stage lists arrival order]
     L --> M{Host closes window and judges first eligible team}
@@ -97,8 +97,8 @@ flowchart TD
 - **Space / Enter:** Start or advance screens; Space also starts the round randomizer from the board.
 - **Arrow keys:** Move among boxes, teams, and choices.
 - **Enter:** Confirm the selected box, team, or modal choice.
-- **Space / C:** During the answer countdown, mark the active team's answer correct. In the steal modal, C marks the first eligible buzzing team correct.
-- **X / W:** During the answer countdown, mark the active team's answer wrong and open the steal modal. In the steal modal, X chooses **No Steal / Forfeit**.
+- **C:** During the answer countdown, mark the active team's answer correct. In the steal modal, C marks the first eligible buzzing team correct.
+- **X:** During the answer countdown, mark the active team's answer wrong and open the steal modal. In the steal modal, X chooses **No Steal / Forfeit**.
 - **O:** In the steal modal, open or close the player buzzers.
 - **Left / Right** or **1 / 2:** Select Take It or Give It.
 - **Escape:** Hide a revealed hint or back out where supported.
@@ -107,7 +107,7 @@ The on-screen five-second timer is only a visual countdown. Wait for the host ve
 
 ## Buzzer setup and use
 
-The live buzzer requires Node.js and the project server. The main stage and all large media remain served by the host's computer. GitHub Pages serves only the small phone interface. The phone page sends player names, teams, and buzzes through the Socket.IO relay; the relay decides arrival order. A Cloudflare Tunnel gives that relay a temporary public HTTPS address without exposing the stage or its video files.
+You may skip or just skim this part but I have to include the technical documnetations as well in this process. Moving on. The live buzzer requires Node.js and the project server. The main stage and all large media remain served by the host's computer. GitHub Pages serves only the small phone interface. The phone page sends player names, teams, and buzzes through the Socket.IO relay; the relay decides arrival order. A Cloudflare Tunnel gives that relay a temporary public HTTPS address without exposing the stage or its video files.
 
 1. Install Node.js, open PowerShell in the project folder, and run `npm install` once.
 2. For a local trial, run `npm start` and open `http://localhost:3000`. The local player page is `http://localhost:3000/buzzer/`. Each player joins using the room code shown on the stage.
@@ -119,7 +119,7 @@ The tunnel must point to port **3001**, the buzzer relay. Do not tunnel port **3
 
 Players open the invite, enter the room code, name, and team, and keep the page open. The server accepts up to four player profiles per team. If the phone loses its connection, it attempts to reconnect and restores that player's registration. In the steal modal, the host can see who is connected, the buzz order, and repeat buzzes from the same team. Mark the earliest eligible team's answer correct, or choose **No Steal / Forfeit** if it is wrong or nobody buzzed. If the relay is unavailable, the stage retains manual team-selection fallback.
 
-The invite carries the room code, so it is prefilled on the phone page. The opening screen shows `ROOM CODE: <code>` and the live roster grouped by team before **Start**. The eye button on the opening screen, in stage settings, and in the steal window toggles the display between the code and `****`; the code is visible by default. Open stage settings using the gear beside the audio-cue volume control. Server settings are collapsible and the room code remains outside that section.
+The invite carries the room code, so it is prefilled on the phone page. The opening screen shows `ROOM CODE: **********` and the live roster grouped by team before **Start**. Room codes are hidden by default. The eye button on the opening screen, in stage settings, and in the steal window toggles the display between the mask and the actual code. Open stage settings using the gear beside the audio-cue volume control. Server settings are collapsible and the room code remains outside that section.
 
 The steal window is a wide rectangular panel. On the left are the open/close, correct, and No Steal / Forfeit buttons and auto-close settings. Use **1**, **2**, or **3** to highlight a team card at the top, then **Enter** to confirm a manual override. The right side shows team buzz times and the full arrival-order list. Shortcut instructions appear along the panel bottom. The buzz list and the phone's buzz confirmation clear when the steal modal closes.
 
@@ -133,7 +133,7 @@ I also created and integrated audio cues and sound effects already. I optimized 
 
 ## Suggested Screensharing Setup
 
-Joing Discord in the web browser, so when sharing, you can select the tab and enable the `Share Audio` option. This way, animations and audio will be smooth and crisp.
+Join Discord in the web browser, so when sharing, you can select the tab and enable the `Share Audio` option. This way, animations and audio will be smooth and crisp.
 
 ## Suggested host script (_suggested by AI_)
 
@@ -143,9 +143,9 @@ Joing Discord in the web browser, so when sharing, you can select the tab and en
 
 **Before a song:** “Here’s your hint. Listen closely—complete the lyric as soon as the music stops.”
 
-**After cutoff:** “Finish the next line!” Give the team a chance to answer; use C/Space for correct or X/W for incorrect.
+**After cutoff:** “Finish the next line!” Give the team a chance to answer; press C for correct or X for incorrect.
 
-**Steal window:** “Steal is open! Buzz in, and be ready to sing the missing line.” After the buzz, select the team that won the chance. If nobody claims it or the selected team misses, choose **No Steal / Forfeit**.
+**Steal window:** “Steal is open! Buzz in, and be ready to sing the missing line.” Close the buzzers, judge the first eligible team, and mark them correct with C. If nobody claims it or that team misses, choose **No Steal / Forfeit** with X.
 
 **After a correct answer:** “You got it! Take It to keep the mystery points, or Give It to pass them to another team. Lock in your choice.”
 
@@ -165,7 +165,7 @@ I could be referring to an old version of game mechanics.
 - The mechanics specify a three-second response window for both active answers and steals; the interface shows a five-second countdown after cutoff, but it does not enforce a deadline. Please do note and consider this since its internet connection latency varies for everyone. I deemed 5 seconds ideal to provide ample allowance and consideration. The lyrics may not be possible to sing within 3 seconds. Additionally, I didn't implement the automatic deadline to support this and leave the room for special cases (e.g. countdown hits 0 while the team is currently singing the line).
 - The mechanics describe the song stopping at a random point; the interface stops each video at its fixed `cutoff` time in `songs.csv`. A time bar was also implemented for suspense.
 - The mechanics say the song plays after the hint; in the interface, the host must open the arena and press Space to start it.
-- The mechanics describe teams using an online buzzer; the interface has no buzzer integration. The host selects the team that won the steal.
+- The original mechanics describe teams using an online buzzer. The current build supports individual online buzzers through a Socket.IO relay; the host judges the first eligible team's answer.
 - The mechanics say an incorrect steal forfeits the points; in the interface, the host records this by selecting **No Steal / Forfeit**.
 - The mechanics describe points being revealed after a Give/Take choice; the interface also lets the host control when the reveal happens, and the video continues behind the reveal prompt until that action.
 - The mechanics specify example point values; the interface uses the values in the CSV, including the current mix of positive and negative points.
