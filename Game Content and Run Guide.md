@@ -1,6 +1,6 @@
 # Don't Forget the Lyrics — Game Content and Run Guide
 
-Hello! This is justine. This guide explains how to prepare the media and CSV content, operate the game, and host a round. The current build has 16 mystery boxes, four teams, and three rounds. Each round gives every team one turn, for up to 12 played boxes. Unused boxes remain unopened.
+Hello! This is justine. This guide explains how to prepare the media and CSV content, operate the game, and host a round. The current build has 16 mystery boxes, four teams, and three rounds. Each round gives every team one turn, for up to 12 played boxes. Unused boxes remain unopened. Please contact me for conerns or things.
 
 ## Content manager checklist
 
@@ -133,3 +133,20 @@ Joing Discord in the web browser, so when sharing, you can select the tab and en
 **Round transition:** “That wraps this round. Let’s randomize the next turn order.”
 
 **Finale:** “That’s the final score. Our Don't Forget the Lyrics champions are… [team]!”
+
+
+## Interface Misalignments from the Original Game Mechanics
+
+I could be referring to an old version of game mechanics.
+
+- `Mechanics` describes two rounds and eight boxes played; the interface runs three rounds, with each of the four teams taking one turn per round (up to 12 boxes).
+- The mechanics mention ten boxes available in Round 1; the interface starts with 16 numbered boxes.
+- The mechanics specify a three-second response window for both active answers and steals; the interface shows a five-second countdown after cutoff, but it does not enforce a deadline. Please do note and consider this since its internet connection latency varies for everyone. I deemed 5 seconds ideal to provide ample allowance and consideration. The lyrics may not be possible to sing within 3 seconds. Additionally, I didn't implement the automatic deadline to support this and leave the room for special cases (e.g. countdown hits 0 while the team is currently singing the line).
+- The mechanics describe the song stopping at a random point; the interface stops each video at its fixed `cutoff` time in `songs.csv`. A time bar was also implemented for suspense.
+- The mechanics say the song plays after the hint; in the interface, the host must open the arena and press Space to start it.
+- The mechanics describe teams using an online buzzer; the interface has no buzzer integration. The host selects the team that won the steal.
+- The mechanics say an incorrect steal forfeits the points; in the interface, the host records this by selecting **No Steal / Forfeit**.
+- The mechanics describe points being revealed after a Give/Take choice; the interface also lets the host control when the reveal happens, and the video continues behind the reveal prompt until that action.
+- The mechanics specify example point values; the interface uses the values in the CSV, including the current mix of positive and negative points.
+
+Feel free to contact me for concerns. Thanks. 
