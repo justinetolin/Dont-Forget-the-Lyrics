@@ -15,7 +15,9 @@ if not exist "%~dp0cloudflared.exe" (
   exit /b 1
 )
 
-start "Lyrics Game Stage" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "$env:BUZZER_URL='https://justinetolin.github.io/Dont-Forget-the-Lyrics/buzzer/'; Set-Location -LiteralPath '%~dp0'; npm start"
+set "BUZZER_URL=https://justinetolin.github.io/DFTL-Buzzer/"
+
+start "Lyrics Game Stage" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "$env:BUZZER_URL='%BUZZER_URL%'; Set-Location -LiteralPath '%~dp0'; npm start"
 timeout /t 2 /nobreak >nul
 start "Lyrics Buzzer Tunnel" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "Set-Location -LiteralPath '%~dp0'; & '.\cloudflared.exe' tunnel --url http://localhost:3001"
 
