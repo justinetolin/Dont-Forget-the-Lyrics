@@ -162,12 +162,12 @@ I could be referring to an old version of game mechanics.
 
 - `Mechanics` describes two rounds and eight boxes played; the interface runs three rounds, with each of the four teams taking one turn per round (up to 12 boxes).
 - The mechanics mention ten boxes available in Round 1; the interface starts with 16 numbered boxes.
-- The mechanics specify a three-second response window for both active answers and steals; the interface shows a five-second countdown after cutoff, but it does not enforce a deadline. Please do note and consider this since its internet connection latency varies for everyone. I deemed 5 seconds ideal to provide ample allowance and consideration. The lyrics may not be possible to sing within 3 seconds. Additionally, I didn't implement the automatic deadline to support this and leave the room for special cases (e.g. countdown hits 0 while the team is currently singing the line).
-- The mechanics describe the song stopping at a random point; the interface stops each video at its fixed `cutoff` time in `songs.csv`. A time bar was also implemented for suspense.
+- The mechanics specify a three-second response window for both active answers and steals; the interface shows a five-second countdown after cutoff, but it does not enforce a deadline. Please do note and consider this since its internet connection latency varies for everyone. I adjusted it to 5 seconds for now because I need time for debuugging. Additionally, I didn't implement the automatic deadline to support this and leave the room for special cases (e.g. countdown hits 0 while the team is currently singing the line).
+- The mechanics describe the song stopping at a random point; the interface stops each video at its fixed `cutoff` time in `songs.csv`. A time bar was also implemented for suspense. If this is too much, we can remove it.
 - The mechanics say the song plays after the hint; in the interface, the host must open the arena and press Space to start it.
-- The original mechanics describe teams using an online buzzer. The current build supports individual online buzzers through a Socket.IO relay; the host judges the first eligible team's answer.
+- The original mechanics describe teams using an online buzzer. The current build supports individual online buzzers through a Socket.IO relay; the gamemaster judges the first eligible team's answer.
 - The mechanics say an incorrect steal forfeits the points; in the interface, the host records this by selecting **No Steal / Forfeit**.
 - The mechanics describe points being revealed after a Give/Take choice; the interface also lets the host control when the reveal happens, and the video continues behind the reveal prompt until that action.
 - The mechanics specify example point values; the interface uses the values in the CSV, including the current mix of positive and negative points.
 
-Feel free to contact me for concerns. Thanks. 
+Feel free to contact me for concerns, or if you liked to change some things. Thanks. 
