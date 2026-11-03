@@ -170,4 +170,4 @@ I could be referring to an old version of game mechanics.
 - The mechanics describe points being revealed after a Give/Take choice; the interface also lets the host control when the reveal happens, and the video continues behind the reveal prompt until that action.
 - The mechanics specify example point values; the interface uses the values in the CSV, including the current mix of positive and negative points.
 
-Feel free to contact me for concerns, or if you liked to change some things. Thanks. 
+Feel free to contact me for concerns, or if you like to adjust some settings. Thanks. 
