@@ -25,7 +25,7 @@ Provide one background photo named `bg.png`. It fills the screen behind both the
 
 Provide one hint image per box in `hints/`, named with the box number: `1.png`, `2.png`, through `16.png`. Hints render inside 16:10 board tiles, with the entire image visible. Prepare each image with its important subject centered and some breathing room around it.
 
-Provide the corresponding music videos in `songs/`, named `1.mp4` through `16.mp4`. Each video should be a playable MP4 with its audio included. An original music video with prominent, readable lyrics (edited part) is suggested for a strong visual experience. Set the CSV cutoff so the video stops just before the lyric the team must supply; set `aftrev` to the time when the answer should be shown. Test the timestamps against the final exported video. Use seconds, including decimals when useful. See details for the song box propeties below ito sususnod ko na isusulat.
+Provide the corresponding music videos in `songs/`, named `1.mp4` through `16.mp4`. Each video should be a playable MP4 with its audio included. An original music video with prominent, readable lyrics (edited part) is suggested for a strong visual experience. Set the CSV cutoff so the video stops just before the lyric the team must supply; set `aftrev` to the time when the answer should be shown. Test the timestamps against the final exported video. Use seconds, including decimals when useful. See details for the song box propeties below ito sususnod ko na isusulat. Its important to normalize the audio levels for all songs for smooth listening experience.
 
 ## `songs.csv` format
 

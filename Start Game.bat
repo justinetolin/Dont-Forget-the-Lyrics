@@ -18,7 +18,7 @@ if not exist "%~dp0cloudflared.exe" (
 set "BUZZER_URL=https://justinetolin.github.io/DFTL-Buzzer/"
 
 start "Lyrics Game Stage" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "$env:BUZZER_URL='%BUZZER_URL%'; Set-Location -LiteralPath '%~dp0'; npm start"
-timeout /t 2 /nobreak >nul
+timeout /t 5 /nobreak >nul
 start "Lyrics Buzzer Tunnel" powershell.exe -NoExit -ExecutionPolicy Bypass -Command "Set-Location -LiteralPath '%~dp0'; & '.\cloudflared.exe' tunnel --url http://localhost:3001"
 
 echo Started the stage and buzzer tunnel in two terminal windows.
