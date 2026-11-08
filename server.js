@@ -52,7 +52,7 @@ const server = http.createServer((req, res) => {
 
 const socketServer = http.createServer();
 const io = new Server(socketServer, { cors: { origin: true, methods: ["GET", "POST"] }, maxHttpBufferSize: 10_000 });
-const TEAM_NAMES = { florea: "Florea", solaris: "Solaris", aurelia: "Aurelia", frostveil: "Frostveil" };
+const TEAM_NAMES = { florea: "Floréa", solaris: "Solaris", aurelia: "Aurelia", frostveil: "Frostveil" };
 function publicState(game) {
   const joinLink = `${game.buzzerPageUrl}${game.buzzerPageUrl.includes("?") ? "&" : "?"}server=${encodeURIComponent(game.publicServerUrl)}&room=${encodeURIComponent(game.code)}`;
   return { code: game.code, activeTeam: game.activeTeam, publicServerUrl: game.publicServerUrl, joinLink, window: game.window ? { open: game.window.open, autoClose: game.window.autoClose, duration: game.window.duration, closesAt: game.window.closesAt } : null,

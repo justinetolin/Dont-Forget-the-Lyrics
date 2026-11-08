@@ -38,7 +38,7 @@ The application will read all media and metadata relative to `index.html` using 
 ```
 
 > **Important Naming Conventions:**
-> * Team names must be strictly spelled as: **Florea**, **Solaris**, **Aurelia**, and **Frostveil**.
+> * Team names must be strictly spelled as: **Floréa**, **Solaris**, **Aurelia**, and **Frostveil**.
 > * File paths, image names, and team logo filenames are strictly **lowercase**.
 > * songs inside the songs/ folder will be named as 1, 2, 3,
 > 
@@ -104,7 +104,7 @@ I know css so please after you finish, indicate to me how can i change these col
 +-------------------+-------------------------------------------+-------------------+
 |   LEFT SIDEBAR    |              CENTER STAGE                |   RIGHT SIDEBAR   |
 |                   |                (4x4 GRID)                 |                   |
-|  [FLOREA CARD]    |  +---------+---------+---------+---------+ |  [AURELIA CARD]   |
+|  [FLORÉA CARD]    |  +---------+---------+---------+---------+ |  [AURELIA CARD]   |
 |  - Logo           |  | Box #1  | Box #2  | Box #3  | Box #4  | |  - Logo           |
 |  - Score: 0       |  +---------+---------+---------+---------+ |  - Score: 0       |
 |                   |  | Box #5  | Box #6  | Box #7  | Box #8  | |                   |

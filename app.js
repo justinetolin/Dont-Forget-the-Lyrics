@@ -1,5 +1,5 @@
 const TEAMS = [
-  { id: "florea", name: "Florea", logo: "teams/florea.PNG" },
+  { id: "florea", name: "Floréa", logo: "teams/florea.PNG" },
   { id: "solaris", name: "Solaris", logo: "teams/solaris.PNG" },
   { id: "aurelia", name: "Aurelia", logo: "teams/aurelia.PNG" },
   { id: "frostveil", name: "Frostveil", logo: "teams/frostveil.PNG" }
